@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CryptoScalpingApp</string>
+    <string name="edit_transaction_item_settings_description">Settings</string>
+    <string name="add_transaction_item_description">Add</string>
+</resources>
