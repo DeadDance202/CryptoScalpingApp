@@ -1,12 +1,12 @@
 package com.example.cryptoscalpingapp.presentation.viewmodel
 
 import androidx.lifecycle.*
-import com.example.cryptoscalpingapp.domain.usecase.GetTransactionItemListUseCase
+import com.example.cryptoscalpingapp.domain.usecase.GetTransactionListUseCase
 import com.example.cryptoscalpingapp.domain.model.TransactionItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class TransactionItemsViewModel(private val getTransactionsUseCase: GetTransactionItemListUseCase) :
+class TransactionItemsViewModel(private val getTransactionsUseCase: GetTransactionListUseCase) :
     ViewModel() {
 
     private val _transactions = MutableLiveData<List<TransactionItem>>()
@@ -53,7 +53,7 @@ class TransactionItemsViewModel(private val getTransactionsUseCase: GetTransacti
         }
     }
 
-    class TransactionItemsViewModelFactory(private val getTransactionsUseCase: GetTransactionItemListUseCase) :
+    class TransactionItemsViewModelFactory(private val getTransactionsUseCase: GetTransactionListUseCase) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(TransactionItemsViewModel::class.java)) {

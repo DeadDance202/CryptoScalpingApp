@@ -45,7 +45,6 @@ dependencies {
     implementation (libs.kotlinx.coroutines.core)
     implementation (libs.kotlinx.coroutines.android)
     implementation (libs.kotlin.reflect)
-    implementation(libs.appcompat.v7)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
