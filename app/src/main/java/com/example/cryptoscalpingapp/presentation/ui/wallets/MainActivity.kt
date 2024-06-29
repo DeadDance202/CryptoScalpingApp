@@ -1,29 +1,52 @@
 package com.example.cryptoscalpingapp.presentation.ui.wallets
 
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cryptoscalpingapp.R
 import com.example.cryptoscalpingapp.presentation.viewmodel.WalletListViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: WalletListViewModel
     private lateinit var walletListAdapter: WalletListAdapter
+    private var walletItemContainer: FragmentContainerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.etherscan_activity_main)
+        setContentView(R.layout.activity_main)
+        walletItemContainer = findViewById(R.id.wallet_item_container)
         setupRecyclerView()
         viewModel = ViewModelProvider(this)[WalletListViewModel::class.java]
-
         viewModel.walletList.observe(this) {
             walletListAdapter.submitList(it)
         }
+        val buttonAddWalletItem = findViewById<FloatingActionButton>(R.id.btn_add_wallet_item)
+        buttonAddWalletItem.setOnClickListener {
+            if (isOnePaneMode()) {
+                val intent = WalletItemActivity.newIntentAddItem(this)
+                startActivity(intent)
+            } else {
+                launchFragment(WalletItemFragment.newInstanceAddItem())
+            }
+        }
+    }
+
+    private fun isOnePaneMode(): Boolean {
+        return walletItemContainer == null
+    }
+
+    private fun launchFragment(fragment: Fragment) {
+        supportFragmentManager.popBackStack()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.wallet_item_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun setupRecyclerView() {
@@ -54,14 +77,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         walletListAdapter.onWalletItemClickListener = {
-            Log.d("longClick", "$it")
+            if (isOnePaneMode()) {
+                val intent = WalletItemActivity.newIntentEditItem(this, it.id)
+                startActivity(intent)
+            } else {
+                launchFragment(WalletItemFragment.newInstanceEditItem(it.id))
+            }
         }
     }
 
     private fun setupSwipeListener(rvWalletList: RecyclerView) {
         val callback = object : ItemTouchHelper.SimpleCallback(
             0,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            ItemTouchHelper.LEFT
         ) {
             override fun onMove(
                 recyclerView: RecyclerView,

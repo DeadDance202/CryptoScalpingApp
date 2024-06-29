@@ -4,17 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.cryptoscalpingapp.domain.model.WalletItem
 import com.example.cryptoscalpingapp.domain.usecase.WalletListRepository
-import java.lang.RuntimeException
 
-object WalletListRepositoryImpl: WalletListRepository {
+object WalletListRepositoryImpl : WalletListRepository {
 
-    private val walletList = sortedSetOf<WalletItem>({o1, o2 -> o1.id.compareTo(o2.id)})
+    private val walletList = sortedSetOf<WalletItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
     private val walletListLD = MutableLiveData<List<WalletItem>>()
     private var autoIncrementId = 0
 
     init {
-        for (i in 0 until 20 ) {
-            val item = WalletItem ("Name  $i", "string", false)
+        for (i in 0 until 10) {
+            val item = WalletItem("Name  $i", "string", "ss..ss", false)
             addWalletItem(item)
         }
     }

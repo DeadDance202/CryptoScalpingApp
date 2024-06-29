@@ -45,7 +45,7 @@ class WalletListAdapter : ListAdapter<WalletItem, WalletItemViewHolder>(WalletIt
             }
 
             tvAddressName.text = walletItem.name
-            tvAddress.text = walletItem.address
+            tvAddress.text = walletItem.shortAddress
         }
     }
 
