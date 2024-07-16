@@ -3,14 +3,20 @@ package com.example.cryptoscalpingapp.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.cryptoscalpingapp.data.repository.WalletListRepositoryImpl
-import com.example.cryptoscalpingapp.domain.model.WalletItem
-import com.example.cryptoscalpingapp.domain.usecase.AddWalletItemUseCase
-import com.example.cryptoscalpingapp.domain.usecase.EditWalletItemUseCase
-import com.example.cryptoscalpingapp.domain.usecase.GetWalletItemUseCase
+import androidx.lifecycle.viewModelScope
+import com.example.cryptoscalpingapp.data.database.local.WalletItem
+import com.example.cryptoscalpingapp.domain.usecase.wallet.AddWalletItemUseCase
+import com.example.cryptoscalpingapp.domain.usecase.wallet.EditWalletItemUseCase
+import com.example.cryptoscalpingapp.domain.usecase.wallet.GetWalletItemUseCase
+import com.example.cryptoscalpingapp.domain.usecase.wallet.WalletListRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class WalletItemViewModel : ViewModel() {
-    private val repository = WalletListRepositoryImpl
+@HiltViewModel
+class WalletItemViewModel @Inject constructor(
+    private val repository: WalletListRepository
+) : ViewModel() {
     private val getWalletItemUseCase = GetWalletItemUseCase(repository)
     private val addWalletItemUseCase = AddWalletItemUseCase(repository)
     private val editWalletItemUseCase = EditWalletItemUseCase(repository)
@@ -27,7 +33,7 @@ class WalletItemViewModel : ViewModel() {
     val invalidInputName: LiveData<Boolean>
         get() = _invalidInputName
 
-    fun getWalletItem(walletItemId: Int) {
+    suspend fun getWalletItem(walletItemId: Int) {
         _walletItem.value = getWalletItemUseCase.getWalletItem(walletItemId)
     }
 
@@ -35,26 +41,39 @@ class WalletItemViewModel : ViewModel() {
     val shouldCloseScreen: LiveData<Unit>
         get() = _shouldCloseScreen
 
-    fun  addWalletItem(inputName: String?, inputAddress: String?) {
+    fun addWalletItem(inputName: String?, inputAddress: String?) {
         val address = parseAddress(inputAddress)
         val name = parseName(inputName)
         if (validateInputs(address, name)) {
             val shortAddress = transformAddress(address)
-            val walletItem = WalletItem(name, address, shortAddress, false)
-            addWalletItemUseCase.addWalletItem(walletItem)
+            val walletItem = WalletItem(
+                name = name,
+                address = address,
+                shortAddress = shortAddress,
+                enabled = false
+            )
+            viewModelScope.launch {
+                addWalletItemUseCase.addWalletItem(walletItem)
+            }
             finnishWork()
         }
     }
 
-    fun editWalletItem(inputName: String?, inputAddress: String?) {
+    suspend fun editWalletItem(inputName: String?, inputAddress: String?) {
         val address = parseAddress(inputAddress)
         val name = parseName(inputName)
         if (validateInputs(address, name)) {
             val shortAddress = transformAddress(address)
             _walletItem.value?.let {
                 val walletItem =
-                    it.copy(name = name, shortAddress = shortAddress, address = address)
-                editWalletItemUseCase.editWalletItem(walletItem)
+                    it.copy(
+                        name = name,
+                        shortAddress = shortAddress,
+                        address = address
+                    )
+                viewModelScope.launch {
+                    editWalletItemUseCase.editWalletItem(walletItem)
+                }
                 finnishWork()
             }
         }
@@ -96,6 +115,7 @@ class WalletItemViewModel : ViewModel() {
 
         return result
     }
+
     fun resetInvalidInputName() {
         _invalidInputName.value = false
     }

@@ -1,53 +1,54 @@
 package com.example.cryptoscalpingapp.data.repository
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.cryptoscalpingapp.domain.model.WalletItem
-import com.example.cryptoscalpingapp.domain.usecase.WalletListRepository
+import com.example.cryptoscalpingapp.data.database.local.AppDatabase
+import com.example.cryptoscalpingapp.data.database.local.WalletItem
+import com.example.cryptoscalpingapp.domain.usecase.wallet.WalletListRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-object WalletListRepositoryImpl : WalletListRepository {
-
+class WalletListRepositoryImpl(context: Context) : WalletListRepository {
     private val walletList = sortedSetOf<WalletItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
     private val walletListLD = MutableLiveData<List<WalletItem>>()
-    private var autoIncrementId = 0
+    private var walletDao = AppDatabase.getDatabase(context).walletDao()
 
     init {
-        for (i in 0 until 10) {
-            val item = WalletItem("Name  $i", "string", "ss..ss", false)
-            addWalletItem(item)
+        getWalletList()
+    }
+
+    override suspend fun addWalletItem(walletItem: WalletItem) {
+        CoroutineScope(Dispatchers.IO).launch {
+            walletDao.insertWalletItem(walletItem)
         }
     }
 
-    override fun addWalletItem(walletItem: WalletItem) {
-        if (walletItem.id == WalletItem.UNDEFINED_ID) {
-            walletItem.id = autoIncrementId++
+    override suspend fun removeWalletItem(walletItem: WalletItem) {
+        CoroutineScope(Dispatchers.IO).launch {
+            walletDao.deleteWalletItem(walletItem)
         }
-        walletList.add(walletItem)
-        updateList()
     }
 
-    override fun removeWalletItem(walletItem: WalletItem) {
-        walletList.remove(walletItem)
-        updateList()
+    override suspend fun editWalletItem(walletItem: WalletItem) {
+        CoroutineScope(Dispatchers.IO).launch {
+            walletDao.updateWalletItem(walletItem)
+        }
     }
 
-    override fun editWalletItem(walletItem: WalletItem) {
-        val oldElement = getWalletItem(walletItem.id)
-        walletList.remove(oldElement)
-        addWalletItem(walletItem)
-    }
-
-    override fun getWalletItem(walletItemId: Int): WalletItem {
-        return walletList.find {
-            it.id == walletItemId
-        } ?: throw RuntimeException("Element with id $walletItemId not found")
+    override suspend fun getWalletItem(walletItemId: Int): WalletItem {
+        return withContext(Dispatchers.IO) {
+             walletDao.getWalletItem(walletItemId)
+        }
     }
 
     override fun getWalletList(): LiveData<List<WalletItem>> {
-        return walletListLD
+        return walletDao.getAllWalletItems()
     }
 
-    private fun updateList() {
-        walletListLD.value = walletList.toList()
-    }
+//    private fun updateList() {
+//        walletListLD.value = walletList.toList()
+//    }
 }

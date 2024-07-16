@@ -8,5 +8,11 @@
     <string name="error_input_address">Invalid address</string>
     <string name="invalid_input_name">Max 10 symbols</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tv_transaction_hash">Transaction Hash</string>
+    <string name="tv_timestamp">Timestamp</string>
+    <string name="tv_from_address">From Address</string>
+    <string name="to_address">To Address</string>
+    <string name="tv_value">Value</string>
+    <string name="token_symbol">Token Symbol</string>
+    <string name="token_name">Token Name</string>
 </resources>

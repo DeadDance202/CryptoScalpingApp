@@ -1,6 +1,5 @@
 package com.example.cryptoscalpingapp.data
 
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -9,7 +8,7 @@ import java.io.IOException
 
 abstract class BaseNetworkRepository<T>(private val client: OkHttpClient) {
 //    private val shopList = treesetOf<T>()
-    private val shopListLD = MutableLiveData<List<T>>()
+//    private val shopListLD = MutableLiveData<List<T>>()
 
     suspend fun fetchData(url: String): T {
         return withContext(Dispatchers.IO) {
@@ -30,12 +29,12 @@ abstract class BaseNetworkRepository<T>(private val client: OkHttpClient) {
 
     protected abstract fun parseResponse(response: String): T
 
-    fun removeItem(item: T) {
+//    fun removeItem(item: T) {
 //        shopList.remove(item)
 //        updateList()
-    }
+//    }
 
-    private fun updateList() {
+//    private fun updateList() {
 //        shopListLD.value = shopList.toList()
-    }
+//    }
 }
