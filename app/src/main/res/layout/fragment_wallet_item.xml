@@ -5,7 +5,8 @@
     android:id="@+id/wallet_item"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.ui.wallet.WalletItemFragment">
+    tools:context=".presentation.ui.wallet.WalletItemFragment"
+    android:background="@drawable/main_background_gradient" >
 
 
     <com.google.android.material.textfield.TextInputLayout

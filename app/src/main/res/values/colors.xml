@@ -1,14 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="trans_item_enabled">#FFAB40</color>
-    <color name="trans_item_disabled">#80FFAB40</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
     <color name="dark">#5B5B5B</color>
+
+    <!-- Основные цвета -->
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorSurface">#F0F0F0</color>
+    <color name="colorError">#B00020</color>
+
+    <!-- Цвета для карточек и кнопок -->
+    <color name="cardBackground">#FFFFFF</color>
+    <color name="cardShadow">#20000000</color>
+    <color name="fabSettings">#FFAB40</color>
+    <color name="fabAdd">#FF6200EE</color>
+
+    <!-- Цвета текста -->
+    <color name="textPrimary">#000000</color>
+    <color name="textSecondary">#5B5B5B</color>
+    <color name="textHint">#8A8A8A</color>
+
+    <!-- Цвета для фона и разделителей -->
+    <color name="dividerColor">#E0E0E0</color>
+    <color name="backgroundColor">#F0F0F0</color>
+
+    <!-- Цвета для состояния элементов -->
+    <color name="trans_item_enabled">#FFAB40</color>
+    <color name="trans_item_disabled">#80FFAB40</color>
     <color name="dark_blue">#202C51</color>
+
+    <color name="cardBackgroundDisabled">#E0E0E0</color>
+    <color name="textDisabled">#9E9E9E</color>
+    <color name="textSecondaryDisabled">#BDBDBD</color>
+    <color name="disabledStartColor">#F5F5F5</color>
+    <color name="disabledEndColor">#E0E0E0</color>
+
+    <color name="background">#F7F9FC</color>
+    <!--    <color name="textPrimary">#333333</color>-->
+    <color name="buttonPrimary">#FFAB40</color>
+    <color name="white">#FFFFFF</color>
+    <color name="primary">#6200EE</color>
 </resources>
