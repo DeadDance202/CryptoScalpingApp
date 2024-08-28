@@ -1,27 +1,22 @@
 package com.example.cryptoscalpingapp.data.repository
 
+import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import com.example.cryptoscalpingapp.data.database.local.AppDatabase
 import com.example.cryptoscalpingapp.data.database.local.TransactionItem
 import com.example.cryptoscalpingapp.domain.usecase.transaction.TransactionListRepository
 
-object TransactionListRepositoryImpl : TransactionListRepository {
-    private val transactionList = sortedSetOf<TransactionItem>({ o1, o2 -> o2.id.compareTo(o1.id) })
-    private val transactionListLD = MutableLiveData<List<TransactionItem>>()
-    private var autoIncrementId = 0
+class TransactionListRepositoryImpl(context: Context) : TransactionListRepository {
+//    private val transactionList = sortedSetOf<TransactionItem>({ o1, o2 -> o2.id.compareTo(o1.id) })
+//    private val transactionListLD = MutableLiveData<List<TransactionItem>>()
+    private var transactionDao = AppDatabase.getDatabase(context).transactionDao()
 
-    override fun getTransactionList(fileName: String): LiveData<List<TransactionItem>> {
-//        val file = File(application.filesDir, fileName)
-//        if (file.exists()) {
-//            file.forEachLine { line ->
-//                val transactionItem = parseTransactionItem(line)
-//                if (transactionItem.id == transactionId) {
-//                    return transactionItem
-//                }
-//            }
-//        }
-//        return null
-        return transactionListLD
+    override fun getTransactionList(): LiveData<List<TransactionItem>> {
+       return transactionDao.getAllTransactionsDesc()
+    }
+
+    override fun getTransactionListByWalletId(walletItemId: Int): List<TransactionItem> {
+        return transactionDao.getAllTransactionsByWalletId(walletItemId)
     }
 
 //    private fun addTransactionItem(transactionItem: TransactionItem) {
@@ -32,13 +27,21 @@ object TransactionListRepositoryImpl : TransactionListRepository {
 //        updateList()
 //    }
 
-    override fun clearTransactionList() {
-        transactionList.clear()
+    override fun removeTransactionListByWalletId(walletItemId : Int) {
+        transactionDao.deleteAllTransactionsByWalletId(walletItemId)
     }
 
-    private fun updateList() {
-        transactionListLD.value = transactionList.toList()
+    override fun removeTransactionList() {
+        TODO("Not yet implemented")
     }
+
+    override suspend fun addTransactionItem(transactionItem: TransactionItem) {
+        transactionDao.insertTransactionItem(transactionItem)
+    }
+
+//    private fun updateList() {
+//        transactionListLD.value = transactionList.toList()
+//    }
 
 //    override fun getTransactionItem(address: String, transactionId: String): TransactionItem? {
 //        val fileName = "${address}.txt"

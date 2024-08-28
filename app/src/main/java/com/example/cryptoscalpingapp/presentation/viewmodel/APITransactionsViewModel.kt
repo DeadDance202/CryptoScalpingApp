@@ -1,29 +1,55 @@
 package com.example.cryptoscalpingapp.presentation.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptoscalpingapp.data.database.local.TransactionItem
 import com.example.cryptoscalpingapp.data.repository.EtherscanRepository
 import com.example.cryptoscalpingapp.domain.entity.ERC20
 import com.example.cryptoscalpingapp.domain.usecase.apitransaction.FetchTransactionListUseCase
+import com.example.cryptoscalpingapp.domain.usecase.transaction.AddTransactionItemUseCase
+import com.example.cryptoscalpingapp.domain.usecase.transaction.GetTransactionListUseCase
+import com.example.cryptoscalpingapp.domain.usecase.transaction.TransactionListRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
+import javax.inject.Inject
 
-class APITransactionsViewModel(private val application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class APITransactionsViewModel @Inject constructor(
+    private val transactionRepository: TransactionListRepository
+): ViewModel() {
 
     private var requestUrl = ""
     private val client = OkHttpClient()
     private val repository = EtherscanRepository(client)
 //    private val getLastTransactionUseCase = GetLastTransactionUseCase(repository)
     private val fetchTransactionListUseCase = FetchTransactionListUseCase(repository)
+    private var cachedTransactions: List<TransactionItem> = emptyList()
+
+    private val getTransactionListUseCase = GetTransactionListUseCase(transactionRepository)
+    private val addTransactionItemUseCase = AddTransactionItemUseCase(transactionRepository)
+
+    init {
+        viewModelScope.launch {
+            cachedTransactions = getTransactionListUseCase.getTransactionList().value ?: run {
+                // Обработка, если значение null (например, присвоить пустой список)
+                emptyList()
+            }
+        }
+    }
 
     fun startFetchingTransactionsPeriodically(address: String) {
         requestUrl = ERC20(address = address).buildUrl()
+//        Log.d("requestUrl", requestUrl)
         viewModelScope.launch {
             while (true) {
-                fetchTransactions(requestUrl)
+                val list = fetchLastTransactions(requestUrl)
+                for (item in list) {
+                    Log.d("trans_list", item.toString())
+                }
+
                 delay(3000)
             }
         }
@@ -33,17 +59,30 @@ class APITransactionsViewModel(private val application: Application) : AndroidVi
 //        return getLastTransactionUseCase.getLastTransaction()
 //    }
 
-    private suspend fun fetchTransactions(url: String): List<TransactionItem> {
+    private suspend fun fetchLastTransactions(url: String): List<TransactionItem> {
         return try {
-            fetchTransactionListUseCase.fetchTransactionList(url)
-//            val transactions = fetchTransactionListUseCase.fetchTransactionList(url)
-//            val uniqueTransactions = transactions.distinctBy { it.hash } // Assuming `hash` is unique identifier
-//            uniqueTransactions
-            //TODO: need to get unique transaction item
+            val newTransactions = fetchTransactionListUseCase.fetchTransactionList(url)
+
+            val uniqueTransactions = newTransactions.filter { newItem ->
+                cachedTransactions.none { it.hash == newItem.hash }
+            }
+
+            if (uniqueTransactions.isNotEmpty()) {
+                addTransactionItemToDB(uniqueTransactions)
+            }
+            uniqueTransactions
         } catch (e: Exception) {
             emptyList() // Обработка ошибки
         }
     }
+
+    private suspend fun addTransactionItemToDB(transactionItems: List<TransactionItem>) {
+        for (transactionItem in transactionItems) {
+            addTransactionItemUseCase.addTransactionItem(transactionItem)
+        }
+        cachedTransactions = cachedTransactions + transactionItems
+    }
+
 
 //    class APITransactionsViewModelFactory(private val fetchTransactionListUseCase: FetchTransactionListUseCase) :
 //        ViewModelProvider.Factory {

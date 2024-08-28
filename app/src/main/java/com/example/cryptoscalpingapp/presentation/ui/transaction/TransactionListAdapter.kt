@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cryptoscalpingapp.R
 import com.example.cryptoscalpingapp.data.database.local.TransactionItem
+import com.example.cryptoscalpingapp.presentation.utils.StringUtils
 
 class TransactionListAdapter : RecyclerView.Adapter<TransactionItemViewHolder>() {
 
@@ -32,14 +33,13 @@ class TransactionListAdapter : RecyclerView.Adapter<TransactionItemViewHolder>()
     override fun onBindViewHolder(viewHolder: TransactionItemViewHolder, position: Int) {
         val transactionItem = transactionList[position]
         with(viewHolder) {
-            tvTransactionHash.text = transactionItem.hash
+            tvTransactionHash.text = StringUtils.transformString(transactionItem.hash)
             tvTokenSymbol.text = transactionItem.tokenSymbol
             tvTokenName.text = transactionItem.tokenName
-            tvToAddress.text = transactionItem.to
-            tvFromAdress.text = transactionItem.from
+            tvToAddress.text = StringUtils.transformString(transactionItem.to)
+            tvFromAdress.text = StringUtils.transformString(transactionItem.from)
             tvValue.text = transactionItem.value
             tvTimeStamp.text = transactionItem.timeStamp
         }
     }
-
 }

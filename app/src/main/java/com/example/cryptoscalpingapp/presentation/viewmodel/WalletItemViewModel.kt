@@ -9,6 +9,7 @@ import com.example.cryptoscalpingapp.domain.usecase.wallet.AddWalletItemUseCase
 import com.example.cryptoscalpingapp.domain.usecase.wallet.EditWalletItemUseCase
 import com.example.cryptoscalpingapp.domain.usecase.wallet.GetWalletItemUseCase
 import com.example.cryptoscalpingapp.domain.usecase.wallet.WalletListRepository
+import com.example.cryptoscalpingapp.presentation.utils.StringUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -54,8 +55,8 @@ class WalletItemViewModel @Inject constructor(
             )
             viewModelScope.launch {
                 addWalletItemUseCase.addWalletItem(walletItem)
+                finnishWork()
             }
-            finnishWork()
         }
     }
 
@@ -81,12 +82,8 @@ class WalletItemViewModel @Inject constructor(
     }
 
     private fun transformAddress(address: String): String {
-        if (address.length <= 8) {
-            return address
-        }
-        val prefix = address.take(4)
-        val suffix = address.takeLast(4)
-        return "$prefix...$suffix"
+
+        return StringUtils.transformString(address)
     }
 
     private fun parseName(inputName: String?): String {

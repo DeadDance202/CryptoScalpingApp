@@ -1,6 +1,5 @@
 package com.example.cryptoscalpingapp.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -37,7 +36,7 @@ class WalletListViewModel @Inject constructor(
     }
 
     suspend fun changedEnableStateWalletItem(walletItem: WalletItem) {
-        Log.d("walletItem_change", walletItem.toString())
+//        Log.d("walletItem_change", walletItem.toString())
         val newItem = walletItem.copy(enabled = !walletItem.enabled)
         editWalletItemUseCase.editWalletItem(newItem)
         getWalletListUseCase.getWalletList()
