@@ -19,7 +19,7 @@ data class TransactionItem(
     val from: String,
     val contractAddress: String,
     val to: String,
-    val value: String,
+    var value: String,
     val tokenName: String,
     val tokenSymbol: String,
     val tokenDecimal: String,

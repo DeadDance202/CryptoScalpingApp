@@ -10,6 +10,7 @@ import com.example.cryptoscalpingapp.domain.usecase.apitransaction.FetchTransact
 import com.example.cryptoscalpingapp.domain.usecase.transaction.AddTransactionItemUseCase
 import com.example.cryptoscalpingapp.domain.usecase.transaction.GetTransactionListUseCase
 import com.example.cryptoscalpingapp.domain.usecase.transaction.TransactionListRepository
+import com.example.cryptoscalpingapp.presentation.utils.StringUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -78,9 +79,14 @@ class APITransactionsViewModel @Inject constructor(
 
     private suspend fun addTransactionItemToDB(transactionItems: List<TransactionItem>) {
         for (transactionItem in transactionItems) {
+            prepareDataBeforeSave(transactionItem)
             addTransactionItemUseCase.addTransactionItem(transactionItem)
         }
         cachedTransactions = cachedTransactions + transactionItems
+    }
+
+    private fun prepareDataBeforeSave(transactionItem: TransactionItem) {
+        transactionItem.value = StringUtils.priceFormatting(transactionItem.value, transactionItem.tokenDecimal)
     }
 
 

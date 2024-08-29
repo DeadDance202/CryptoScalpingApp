@@ -129,7 +129,7 @@
             android:textColor="@color/textSecondary"
             android:textSize="10sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_value" />
+            app:layout_constraintBottom_toTopOf="@id/tv_toAddress"/>
 
         <TextView
             android:id="@+id/tv_toAddress"
@@ -139,7 +139,7 @@
             android:textColor="@color/textPrimary"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="@id/tv_toAddress_title"
-            app:layout_constraintTop_toBottomOf="@id/tv_toAddress_title" />
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <!-- Сумма транзакции -->
         <TextView
