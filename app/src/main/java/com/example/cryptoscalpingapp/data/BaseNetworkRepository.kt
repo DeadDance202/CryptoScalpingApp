@@ -1,5 +1,6 @@
 package com.example.cryptoscalpingapp.data
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -17,6 +18,7 @@ abstract class BaseNetworkRepository<T>(private val client: OkHttpClient) {
                 .build()
 
             val response = client.newCall(request).execute()
+            Log.d("responce", response.toString())
             if (response.isSuccessful) {
                 response.body?.let {
                     parseResponse(it.string())

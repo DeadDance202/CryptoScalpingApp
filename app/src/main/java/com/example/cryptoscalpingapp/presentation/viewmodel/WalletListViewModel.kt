@@ -35,10 +35,11 @@ class WalletListViewModel @Inject constructor(
         getWalletListUseCase.getWalletList()
     }
 
-    suspend fun changedEnableStateWalletItem(walletItem: WalletItem) {
+    suspend fun changedEnableStateWalletItem(walletItem: WalletItem): WalletItem {
 //        Log.d("walletItem_change", walletItem.toString())
         val newItem = walletItem.copy(enabled = !walletItem.enabled)
         editWalletItemUseCase.editWalletItem(newItem)
         getWalletListUseCase.getWalletList()
+        return newItem
     }
 }

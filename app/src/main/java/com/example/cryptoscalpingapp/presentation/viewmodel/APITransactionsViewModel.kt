@@ -12,6 +12,7 @@ import com.example.cryptoscalpingapp.domain.usecase.transaction.GetTransactionLi
 import com.example.cryptoscalpingapp.domain.usecase.transaction.TransactionListRepository
 import com.example.cryptoscalpingapp.presentation.utils.StringUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
@@ -22,7 +23,7 @@ class APITransactionsViewModel @Inject constructor(
     private val transactionRepository: TransactionListRepository
 ): ViewModel() {
 
-    private var requestUrl = ""
+
     private val client = OkHttpClient()
     private val repository = EtherscanRepository(client)
 //    private val getLastTransactionUseCase = GetLastTransactionUseCase(repository)
@@ -32,28 +33,38 @@ class APITransactionsViewModel @Inject constructor(
     private val getTransactionListUseCase = GetTransactionListUseCase(transactionRepository)
     private val addTransactionItemUseCase = AddTransactionItemUseCase(transactionRepository)
 
+    private val fetchJobs = mutableMapOf<String, Job>()
+
     init {
         viewModelScope.launch {
             cachedTransactions = getTransactionListUseCase.getTransactionList().value ?: run {
-                // Обработка, если значение null (например, присвоить пустой список)
                 emptyList()
             }
         }
     }
 
-    fun startFetchingTransactionsPeriodically(address: String) {
-        requestUrl = ERC20(address = address).buildUrl()
+    fun startFetchingTransactionsPeriodically(id: Int, address: String) {
+        val stringId = id.toString()
+        fetchJobs[stringId]?.cancel()
+        val requestUrl = ERC20(address = address).buildUrl()
 //        Log.d("requestUrl", requestUrl)
-        viewModelScope.launch {
+        Log.d("job", fetchJobs.toString())
+        fetchJobs[stringId] = viewModelScope.launch {
             while (true) {
-                val list = fetchLastTransactions(requestUrl)
-                for (item in list) {
-                    Log.d("trans_list", item.toString())
-                }
-
+//                val list = fetchLastTransactions(requestUrl)
+//                for (item in list) {
+//                    Log.d("trans_list", item.toString())
+//                }
+                fetchLastTransactions(requestUrl)
                 delay(3000)
             }
         }
+    }
+
+    fun stopFetchingTransactions(id: Int) {
+        val stringId = id.toString()
+        fetchJobs[stringId]?.cancel()
+        fetchJobs.remove(stringId)
     }
 
 //    suspend fun getLastTransaction(): TransactionItem? {

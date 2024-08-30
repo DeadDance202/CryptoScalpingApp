@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cryptoscalpingapp.R
+import com.example.cryptoscalpingapp.data.database.local.WalletItem
 import com.example.cryptoscalpingapp.presentation.ui.transaction.TransactionListActivity
 import com.example.cryptoscalpingapp.presentation.viewmodel.APITransactionsViewModel
 import com.example.cryptoscalpingapp.presentation.viewmodel.WalletListViewModel
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         viewModel.walletList.observe(this) {
             walletListAdapter.submitList(it)
+            launchFetchingTransactionsForEnabledItems(it)
         }
         val buttonAddWalletItem = findViewById<FloatingActionButton>(R.id.btn_add_wallet_item)
         buttonAddWalletItem.setOnClickListener {
@@ -40,6 +42,12 @@ class MainActivity : AppCompatActivity() {
             } else {
                 launchFragment(WalletItemFragment.newInstanceAddItem())
             }
+        }
+    }
+
+    private fun launchFetchingTransactionsForEnabledItems(walletList: List<WalletItem>) {
+        walletList.forEach { walletItem ->
+            processFetchingTransactions(walletItem)
         }
     }
 
@@ -76,15 +84,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupLongClickListener() {
-        walletListAdapter.onWalletItemLongClickListener = {
-            val transactionViewModel =
-                ViewModelProvider(this)[APITransactionsViewModel::class.java]
+        walletListAdapter.onWalletItemLongClickListener = { walletItem ->
             lifecycleScope.launch {
-                viewModel.changedEnableStateWalletItem(it)
-                if (!it.enabled) {
-                    transactionViewModel.startFetchingTransactionsPeriodically(it.address)
-                }
+                val updatedItem = viewModel.changedEnableStateWalletItem(walletItem)
+                processFetchingTransactions(updatedItem)
             }
+        }
+    }
+
+    private fun processFetchingTransactions(walletItem: WalletItem) {
+        val transactionViewModel = ViewModelProvider(this)[APITransactionsViewModel::class.java]
+
+        if (walletItem.enabled) {
+            lifecycleScope.launch {
+                transactionViewModel.startFetchingTransactionsPeriodically(walletItem.id, walletItem.address)
+            }
+        } else {
+             transactionViewModel.stopFetchingTransactions(walletItem.id)
         }
     }
 
