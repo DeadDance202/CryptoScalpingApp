@@ -7,8 +7,4 @@ class GetTransactionListUseCase(private val transactionListRepository: Transacti
     fun getTransactionList(): LiveData<List<TransactionItem>> {
         return transactionListRepository.getTransactionList()
     }
-
-    fun getTransactionListByWalletId(walletId: Int): List<TransactionItem> {
-        return transactionListRepository.getTransactionListByWalletId(walletId)
-    }
 }

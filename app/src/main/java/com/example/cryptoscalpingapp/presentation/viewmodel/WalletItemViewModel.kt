@@ -100,7 +100,7 @@ class WalletItemViewModel @Inject constructor(
 
     private fun validateInputs(inputAddress: String, inputName: String): Boolean {
         var result = true
-        if (inputName.length >= 10) {
+        if (inputName.length >= 20) {
             _invalidInputName.value = true
             result = false
         }

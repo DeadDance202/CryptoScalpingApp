@@ -5,7 +5,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -93,14 +92,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun processFetchingTransactions(walletItem: WalletItem) {
-        val transactionViewModel = ViewModelProvider(this)[APITransactionsViewModel::class.java]
-
+        val apiTransactionsViewModel: APITransactionsViewModel by viewModels()
         if (walletItem.enabled) {
             lifecycleScope.launch {
-                transactionViewModel.startFetchingTransactionsPeriodically(walletItem.id, walletItem.address)
+                apiTransactionsViewModel.startFetchingTransactionsPeriodically(
+                    walletItem.id,
+                    walletItem.address
+                )
             }
         } else {
-             transactionViewModel.stopFetchingTransactions(walletItem.id)
+            apiTransactionsViewModel.stopFetchingTransactions(walletItem.id)
         }
     }
 
@@ -137,12 +138,7 @@ class MainActivity : AppCompatActivity() {
 
                     ItemTouchHelper.RIGHT -> {
                         val context = rvWalletList.context
-                        val intent = TransactionListActivity.newIntent(context)
-
-//                        val intent = Intent(context, TransactionListActivity::class.java)
-//                            .apply {
-//                            putExtra("item_id", item.id)
-//                        }
+                        val intent = TransactionListActivity.newIntent(context, item.id)
                         context.startActivity(intent)
                         // Можно добавить восстановление положения элемента
                         walletListAdapter.notifyItemChanged(viewHolder.adapterPosition)
@@ -154,31 +150,3 @@ class MainActivity : AppCompatActivity() {
         itemTouchHelper.attachToRecyclerView(rvWalletList)
     }
 }
-
-
-//    private lateinit var viewModel: TransactionItemsViewModel
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.etherscan_activity_main)
-//        val client = OkHttpClient()
-//        val repository = EtherscanRepository(client)
-//        val getTransactionsUseCase = GetTransactionListUseCase(repository)
-//        val viewModelFactory = TransactionItemsViewModel.TransactionItemsViewModelFactory(getTransactionsUseCase)
-//
-//        viewModel = ViewModelProvider(this, viewModelFactory)[TransactionItemsViewModel::class.java]
-//
-//        viewModel.transactions.observe(this
-//        ) { transactions ->
-//            transactions.forEach {
-//                println(it)
-//                Log.d("responce!", "$it")
-//            }
-//        }
-//    }
-//
-//    fun setEtherscanPrefs(view: View?) {
-//        val intent = Intent(this, SettingsActivity::class.java)
-//        startActivity(intent)
-//    }
-//}

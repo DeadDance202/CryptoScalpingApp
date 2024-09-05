@@ -14,39 +14,22 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TransactionListActivity : AppCompatActivity() {
-//    private lateinit var viewModel: TransactionItemViewModel
     private val viewModel: TransactionItemViewModel by viewModels()
     private lateinit var adapter: TransactionListAdapter
-    private var fileName: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        TransactionListRepositoryImpl.init(this)
         setContentView(R.layout.activity_transaction_list)
-//        parseIntent()
+        val walletItemId = intent.getIntExtra(EXTRA_WALLET_ITEM_ID, -1)
         setupRecyclerView()
-//        viewModel = ViewModelProvider(this)[TransactionItemViewModel::class.java]
-//        viewModel.getTransactionListFromFile(fileName)
+        if (walletItemId != -1) {
+            viewModel.getTransactionListByWalletId(walletItemId)
+        }
         viewModel.transactionList.observe(this) {
             adapter.transactionList = it
         }
-
-//        viewModel.walletList.observe(this) {
-//            walletListAdapter.submitList(it)
-//        }
     }
-
-//    private fun parseIntent() {
-//        if (!intent.hasExtra("fileName")) {
-//            throw RuntimeException("file not found")
-//        }
-//
-//        val name = intent.getStringExtra("fileName")
-//        if (name != null) {
-//            fileName = name
-//        }
-//    }
 
     private fun setupRecyclerView() {
         val rvTransactionList = findViewById<RecyclerView>(R.id.rv_transaction_list)
@@ -56,9 +39,12 @@ class TransactionListActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun newIntent(context: Context): Intent {
+        fun newIntent(context: Context, walletItemId: Int): Intent {
             val intent = Intent(context, TransactionListActivity::class.java)
+            intent.putExtra(EXTRA_WALLET_ITEM_ID, walletItemId)
             return intent
         }
+
+        private const val EXTRA_WALLET_ITEM_ID = "wallet_item_id"
     }
 }

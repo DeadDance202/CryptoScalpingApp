@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
 )
 data class TransactionItem(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val walletItemId: Int,
+    var walletItemId: Int,
     val blockNumber: String,
     val timeStamp: String,
     val hash: String,

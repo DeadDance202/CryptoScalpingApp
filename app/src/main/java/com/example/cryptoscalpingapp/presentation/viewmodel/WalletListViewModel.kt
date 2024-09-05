@@ -24,10 +24,6 @@ class WalletListViewModel @Inject constructor(
     private val editWalletItemUseCase = EditWalletItemUseCase(repository)
     val walletList: LiveData<List<WalletItem>> = getWalletListUseCase.getWalletList()
 
-    private val _toastMessage = MutableLiveData<String>()
-    val toastMessage: LiveData<String>
-        get() = _toastMessage
-
     fun removeWalletItem(walletItem: WalletItem) {
         CoroutineScope(Dispatchers.IO).launch {
             removeWalletItemUseCase.removeWalletItem(walletItem)

@@ -8,5 +8,5 @@ interface TransactionListRepository {
     fun removeTransactionListByWalletId(walletItemId : Int)
     fun removeTransactionList()
     suspend fun addTransactionItem(transactionItem: TransactionItem)
-    fun getTransactionListByWalletId(walletItemId: Int): List<TransactionItem>
+    fun getTransactionListByWalletIdDesc(walletItemId: Int): LiveData<List<TransactionItem>>
 }

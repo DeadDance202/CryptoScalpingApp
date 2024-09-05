@@ -15,8 +15,8 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions ORDER BY id DESC")
     fun getAllTransactionsDesc(): LiveData<List<TransactionItem>>
 
-    @Query("SELECT * FROM transactions WHERE walletItemId = :walletItemId")
-    fun getAllTransactionsByWalletId(walletItemId: Int): List<TransactionItem>
+    @Query("SELECT * FROM transactions WHERE walletItemId = :walletItemId ORDER BY id DESC")
+    fun getAllTransactionsByWalletIdDesc(walletItemId: Int): LiveData<List<TransactionItem>>
 
     @Query("DELETE FROM transactions WHERE walletItemId = :walletItemId")
     fun deleteAllTransactionsByWalletId(walletItemId: Int)
