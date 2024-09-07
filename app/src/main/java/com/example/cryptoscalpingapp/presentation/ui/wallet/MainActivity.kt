@@ -10,15 +10,19 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cryptoscalpingapp.R
 import com.example.cryptoscalpingapp.data.database.local.WalletItem
+import com.example.cryptoscalpingapp.databinding.ActivityMainBinding
+import com.example.cryptoscalpingapp.presentation.ui.settings.SettingsActivity
+import com.example.cryptoscalpingapp.presentation.ui.settings.SettingsFragment
 import com.example.cryptoscalpingapp.presentation.ui.transaction.TransactionListActivity
+import com.example.cryptoscalpingapp.presentation.viewmodel.APIKeySecureViewModel
 import com.example.cryptoscalpingapp.presentation.viewmodel.APITransactionsViewModel
 import com.example.cryptoscalpingapp.presentation.viewmodel.WalletListViewModel
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
     private val viewModel: WalletListViewModel by viewModels()
     private lateinit var walletListAdapter: WalletListAdapter
     private var walletItemContainer: FragmentContainerView? = null
@@ -26,14 +30,32 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        walletItemContainer = findViewById(R.id.wallet_item_container)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        walletItemContainer = binding.walletItemContainer
+        setContentView(binding.root)
         setupRecyclerView()
         viewModel.walletList.observe(this) {
             walletListAdapter.submitList(it)
             launchFetchingTransactionsForEnabledItems(it)
         }
-        val buttonAddWalletItem = findViewById<FloatingActionButton>(R.id.btn_add_wallet_item)
+        setupAddWalletItemClickListener()
+        setupMainSettingsClickListener()
+    }
+
+    private fun setupMainSettingsClickListener() {
+        val buttonMainSettings = binding.btnWalletSettingsButton
+        buttonMainSettings.setOnClickListener {
+            if (isOnePaneMode()) {
+                val intent = SettingsActivity.newIntentEditSetting(this)
+                startActivity(intent)
+            } else {
+                launchFragment(SettingsFragment.newInstanceEditSettings())
+            }
+        }
+    }
+
+    private fun setupAddWalletItemClickListener() {
+        val buttonAddWalletItem = binding.btnAddWalletItem
         buttonAddWalletItem.setOnClickListener {
             if (isOnePaneMode()) {
                 val intent = WalletItemActivity.newIntentAddItem(this)
@@ -63,7 +85,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        val rvWalletList = findViewById<RecyclerView>(R.id.rv_wallet_list)
+        val rvWalletList = binding.rvWalletList
         walletListAdapter = WalletListAdapter()
         with(rvWalletList) {
             adapter = walletListAdapter
@@ -93,11 +115,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun processFetchingTransactions(walletItem: WalletItem) {
         val apiTransactionsViewModel: APITransactionsViewModel by viewModels()
+        val apiKeySecureViewModel: APIKeySecureViewModel by viewModels()
         if (walletItem.enabled) {
             lifecycleScope.launch {
                 apiTransactionsViewModel.startFetchingTransactionsPeriodically(
                     walletItem.id,
-                    walletItem.address
+                    walletItem.address,
+                    apiKeySecureViewModel.getApiKey()
                 )
             }
         } else {

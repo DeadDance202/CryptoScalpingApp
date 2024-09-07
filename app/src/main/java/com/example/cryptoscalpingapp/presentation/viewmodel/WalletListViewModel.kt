@@ -1,7 +1,6 @@
 package com.example.cryptoscalpingapp.presentation.viewmodel
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.cryptoscalpingapp.data.database.local.WalletItem
 import com.example.cryptoscalpingapp.domain.usecase.wallet.EditWalletItemUseCase

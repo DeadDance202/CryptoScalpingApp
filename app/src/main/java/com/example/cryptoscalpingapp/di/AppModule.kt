@@ -1,6 +1,7 @@
 package com.example.cryptoscalpingapp.di
 
 import android.content.Context
+import com.example.cryptoscalpingapp.domain.usecase.apikeysecure.APIKeySecureRepository
 import com.example.cryptoscalpingapp.domain.usecase.transaction.TransactionListRepository
 import com.example.cryptoscalpingapp.domain.usecase.wallet.WalletListRepository
 import dagger.Module
@@ -21,5 +22,10 @@ object AppModule {
     @Provides
     fun provideTransactionListRepository(@ApplicationContext context: Context): TransactionListRepository {
         return com.example.cryptoscalpingapp.data.repository.TransactionListRepositoryImpl(context)
+    }
+
+    @Provides
+    fun provideAPIKeySecureRepository(@ApplicationContext context: Context): APIKeySecureRepository {
+        return com.example.cryptoscalpingapp.data.repository.ApiKeySecureRepositoryImp(context)
     }
 }

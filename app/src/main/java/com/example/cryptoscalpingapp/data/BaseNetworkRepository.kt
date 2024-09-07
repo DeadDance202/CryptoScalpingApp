@@ -8,9 +8,6 @@ import okhttp3.Request
 import java.io.IOException
 
 abstract class BaseNetworkRepository<T>(private val client: OkHttpClient) {
-//    private val shopList = treesetOf<T>()
-//    private val shopListLD = MutableLiveData<List<T>>()
-
     suspend fun fetchData(url: String): T {
         return withContext(Dispatchers.IO) {
             val request = Request.Builder()
@@ -30,13 +27,4 @@ abstract class BaseNetworkRepository<T>(private val client: OkHttpClient) {
     }
 
     protected abstract fun parseResponse(response: String): T
-
-//    fun removeItem(item: T) {
-//        shopList.remove(item)
-//        updateList()
-//    }
-
-//    private fun updateList() {
-//        shopListLD.value = shopList.toList()
-//    }
 }

@@ -15,4 +15,6 @@
     <string name="tv_value">Value</string>
     <string name="token_symbol">Token Symbol</string>
     <string name="token_name">Token Name</string>
+    <string name="main_settings_title">Основные настройки</string>
+
 </resources>

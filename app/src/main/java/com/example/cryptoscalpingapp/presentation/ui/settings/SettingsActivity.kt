@@ -1,8 +1,12 @@
-package com.example.cryptoscalpingapp.presentation.ui.wallet
+package com.example.cryptoscalpingapp.presentation.ui.settings
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -10,5 +14,11 @@ class SettingsActivity : AppCompatActivity() {
             .beginTransaction()
             .replace(android.R.id.content, SettingsFragment())
             .commit()
+    }
+
+    companion object {
+        fun newIntentEditSetting(context: Context): Intent {
+            return Intent(context, SettingsActivity::class.java)
+        }
     }
 }

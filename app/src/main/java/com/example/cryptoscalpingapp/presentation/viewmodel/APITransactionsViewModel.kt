@@ -33,14 +33,21 @@ class APITransactionsViewModel @Inject constructor(
 
     private val fetchJobs = mutableMapOf<String, Job>()
 
-    fun startFetchingTransactionsPeriodically(walletItemId: Int, address: String) {
+    fun startFetchingTransactionsPeriodically(walletItemId: Int, address: String, apiKey: String?) {
         val stringId = walletItemId.toString()
         fetchJobs[stringId]?.cancel()
-        val requestUrl = ERC20(address = address).buildUrl()
-        fetchJobs[stringId] = viewModelScope.launch {
-            while (true) {
-                fetchLastTransactions(walletItemId, requestUrl)
-                delay(3000)
+
+        if (!apiKey.isNullOrEmpty()) {
+            val requestUrl = ERC20(
+                address = address,
+                apiKeyProvider = { apiKey }
+            ).buildUrl()
+
+            fetchJobs[stringId] = viewModelScope.launch {
+                while (true) {
+                    fetchLastTransactions(walletItemId, requestUrl)
+                    delay(3000)
+                }
             }
         }
     }

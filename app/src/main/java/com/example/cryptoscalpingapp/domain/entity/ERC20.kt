@@ -6,11 +6,12 @@ data class ERC20(
     val page: String = "1",
     val offset: String = "1",
     val sort: String = "desc",
-    val apiKey: String = "PSJW6F99HTNACN1ENWVCTZZ2P1U2I9AU9Q",
     val startBlock: String = "0",
-    val endBlock: String = "999999999"
+    val endBlock: String = "999999999",
+    private val apiKeyProvider: () -> String?
 ) {
     fun buildUrl(): String {
+        val apiKey = apiKeyProvider.invoke() ?: ""
         return "$etherscanUrl?module=account" +
                 "&action=tokentx" +
                 "&address=$address" +
